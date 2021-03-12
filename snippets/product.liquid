@@ -1,0 +1,281 @@
+<link rel="stylesheet" type="text/css" href="{{'slick.css'|asset_url}}"/>
+<link rel="stylesheet" type="text/css" href="{{'slick-theme.css'|asset_url}}"/>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="{{'slick.min.js'|asset_url}}"></script>
+
+<script type="application/json" data-images>
+  {% assign product_images = product.media | where: 'media_type', 'image'  %}
+
+  {
+    {%- for media in product_images %}
+      {% if media.media_type == 'image' %}
+        {%- capture rimg_string -%}
+          {%
+            include 'rimg',
+            img: media,
+            attr: 'data-product-main-image',
+            size: '1400x',
+            lazy: false
+          %}
+        {%- endcapture -%}
+        "{{ media.id }}": {{ rimg_string | strip_newlines | json }}{%- unless forloop.last %},{%- endunless -%}
+      {% endif %}
+    {%- endfor -%}
+  }
+</script>
+
+{% assign product_id = product.id %}
+{% assign variant = product.selected_or_first_available_variant %}
+
+{% if collection == null or collection.handle == 'frontpage' or collection.handle == 'all' %}
+  {% assign found_a_collection = false %}
+  {% for c in product.collections %}
+    {% if found_a_collection == false and c.handle != 'frontpage' and c.handle != 'all' %}
+      {% assign found_a_collection = true %}
+      {% assign collection = c %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% assign selected_media = selected_variant.featured_media | default: product.featured_media %}
+
+{% if product != blank and show_payment_button %}
+  {% capture throwaway %}
+    {% form 'product', product %}
+      {% capture payment_buttons %}
+        {{ form | payment_button }}
+      {% endcapture %}
+    {% endform %}
+  {% endcapture %}
+{% endif %}
+
+{% capture form_content %}
+  {% unless product.has_only_default_variant %}
+    <div class="product-options">
+      {%-
+        include 'product-options-dropdown',
+        form_id: product_id
+      -%}
+
+      <label class="product-option-column-1 product-option-row-4 product-option-quantity-label">{{ 'general.general.quantity' | t }}</label>
+      <input class="product-option-quantity" type="text" name="quantity" value="1" />
+
+      <div class="selector-wrapper no-js-required">
+        <label for="product-select-{{ product_id }}"></label>
+        <select
+          class="product-select"
+          name="id"
+          id="product-select-{{ product_id }}"
+          data-select-ignore
+        >
+          {% for variant in product.variants %}
+            {% if variant.available %}
+              <option
+                {% if variant == selected_variant %}selected="selected"{% endif %}
+                value="{{ variant.id }}" data-variant-id="{{ variant.id }}" data-sku="{{ variant.sku }}">
+                {{ variant.title }} - {{ variant.price | money }}
+              </option>
+            {% else %}
+              <option disabled="disabled" data-variant-id="{{ variant.id }}" value="{{ variant.id }}">
+                {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  {% else %}
+    <div class="product-options product-options-default-only">
+      <input
+        class="product-select"
+        name="id"
+        value="{{ product.variants[0].id }}"
+        type="hidden"
+        data-variant-title="{{ product.variants[0].title }}"
+      />
+
+      <label class="product-option-column-1 product-option-row-1 product-option-quantity-label">{{ 'general.general.quantity' | t }}</label>
+      <input class="product-option-quantity" type="text" name="quantity" value="1" />
+    </div>
+  {% endunless %}
+
+  {% if product.available %}
+    <div id="infiniteoptions-container"></div>
+    <div id="uploadery-container"></div>
+  {% endif %}
+
+
+  <div
+    class="
+      product-add-to-cart
+      {% if product != blank and show_payment_button %}
+        product-smart-payments
+      {% endif %}
+    "
+  >
+    {% if variant.available %}
+      <input class="add-to-cart" type="submit" value="{{ 'products.product.add_to_cart' | t }}" />
+    {% else %}
+      <input class="add-to-cart disabled" type="submit" value="{{ 'products.product.sold_out' | t }}" disabled/>
+    {% endif %}
+
+    {% if payment_buttons != blank %}
+      {{ payment_buttons }}
+    {% endif %}
+  </div>
+{% endcapture %}
+
+<div
+  class="
+    product
+    {% if images_layout == 'masonry' %}
+      product-masonry
+    {% endif %}
+  "
+  data-ajax
+
+  {% if enable_zoom %}
+    data-zoom
+  {% endif %}
+
+  {% if enable_linked_options %}
+    data-linked-options
+  {% endif %}
+
+  {% if images_layout == 'slideshow' %}
+    data-images-slideshow
+  {% elsif images_layout == 'list' %}
+    data-images-list-view
+  {% elsif images_layout == 'masonry' %}
+    data-product-masonry
+  {% endif %}
+>
+  {%
+    include 'product-gallery',
+    images_layout: images_layout,
+    use_masonry: use_masonry,
+    product: product,
+    variant: variant,
+    selected_media: selected_media,
+    enable_zoom: enable_zoom,
+    lazy: lazy
+  %}
+
+  {%- capture tax_text -%}
+    {{ 'products.product.tax_line_html' | t }}
+  {%- endcapture -%}
+
+  <div class="product-details-wrapper">
+    <div class="product-details {% if tax_text != blank and variant.taxable %}has-tax-line{% endif %}">
+      {% if show_vendor %}
+        <a class="product-vendor" href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a>
+      {% endif %}
+
+      <h1 class="product-title">
+        {% if product != blank %}
+          {% if link_to %}
+            <a href="{{ product.url }}">
+              {{ product.title }}
+            </a>
+          {% else %}
+            {{ product.title }}
+          {% endif %}
+        {% else %}
+          {{ 'products.product.onboarding.title' | t }}
+        {% endif %}
+      </h1>
+
+      <p class="product-price">
+        <span class="product-price-minimum money">
+          {% if product != blank %}
+            {{ variant.price | money }}
+          {% else %}
+            {{ 'products.product.onboarding.price' | t }}
+          {% endif %}
+        </span>
+        <span
+          class="product-price-compare money original {% if variant.compare_at_price > variant.price %}visible{% endif %}"
+        >
+          {{ variant.compare_at_price | money }}
+        </span>
+      </p>
+
+      {% assign variant_for_unit_price = variant %}
+      {% comment %}unit-price{% endcomment %}
+      {% comment %}
+        @param variant_for_unit_price
+          Product variant for price
+        @param tax_text
+          String containing 'tax included' text
+      {% endcomment %}
+      
+      {% capture total_quantity %}
+        <span class="product-price__unit-price-total-quantity" data-unit-price-quantity>
+          {{ variant_for_unit_price.unit_price_measurement.quantity_value }}{{ variant_for_unit_price.unit_price_measurement.quantity_unit }}
+        </span>
+      {% endcapture %}
+      
+      
+      {% capture unit_price %}
+        <span class="product-price__unit-price-amount money" data-unit-price-amount>
+          {{ variant_for_unit_price.unit_price | money }}
+        </span>
+      {% endcapture %}
+      {% capture unit_measure %}
+        <span class="product-price__unit-price-measure" data-unit-price-measure>
+          {%- if variant_for_unit_price.unit_price_measurement.reference_value != 1 -%}
+            {{ variant_for_unit_price.unit_price_measurement.reference_value }}
+          {%- endif %}
+          {{ variant_for_unit_price.unit_price_measurement.reference_unit }}
+        </span>
+      {% endcapture %}
+      
+      <div
+        class="
+          product-price__unit-price
+          {% unless variant_for_unit_price.unit_price_measurement %}hidden{% endunless %}
+        "
+        data-unit-price
+      >
+        {{ 'products.product.price_per_unit_html' | t: total_quantity: total_quantity, unit_price: unit_price, unit_measure: unit_measure | strip_newlines }}
+      </div>
+      
+      {% assign variant_for_unit_price = blank %}
+
+      {%- if tax_text != blank -%}
+          <div class="
+            product-price__tax
+            {% unless variant.taxable %}hidden{% endunless %}
+            "
+            data-tax-line
+          >
+            {{ tax_text }}
+          </div>
+      {%- endif -%}
+
+
+      {% if product != blank %}
+        {% form 'product', product, data-product-form: '' %}
+          {{ form_content }}
+        {% endform %}
+      {% else %}
+        <div data-product-form>
+          {{ form_content }}
+        </div>
+      {% endif %}
+
+      <div class="product-message"></div>
+
+      {% if product != blank and product.description != blank %}
+        <div class="product-description rte">
+          {{ product.description }}
+        </div>
+      {% elsif product == blank %}
+        <div class="product-description rte">
+          {{ 'products.product.onboarding.description' | t }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

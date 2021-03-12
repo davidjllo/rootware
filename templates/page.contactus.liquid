@@ -1,0 +1,76 @@
+<style>
+@media(max-width:770px){
+ .main-content{
+   background-image: url('https://cdn.shopify.com/s/files/1/0519/7411/1410/files/rootware_d91a48b3-bbd2-474d-84dc-3eb5731c3091.jpg?v=1612502845');
+ }
+}
+@media(min-width:771px){
+    .main-content{
+    background-image: url('https://cdn.shopify.com/s/files/1/0519/7411/1410/files/ROOT.WARE_logo_1200_x_600_371ef9d6-d6f3-465d-97e8-104e4ba0122f.jpg?v=1608741091');
+  min-height: 600px;
+    }
+}
+  
+.main-content{
+	
+  	margin-top: 0;
+  	background-repeat: no-repeat;
+}
+.page-title{
+	color: white;
+  	font-weight: 600;
+}
+.template-page .page-content .contact-form label{
+ 	margin-bottom:0px; 
+}
+.page-content{
+	color: white;
+}
+.contact-form label{
+	color: white !important;
+    margin-top: 0 !important;
+}
+.page-content{
+ margin-top:0px !important; 
+}
+#contact_form{
+ 	margin-top: 20px;
+  	margin-bottom: 20px;
+}
+</style>
+<br>
+<h1 class="page-title">{{ page.title }}</h1>
+
+
+<div class="page-content rte">
+  {{ page.content }}
+  {% form 'contact' %}
+
+    {% if form.errors %}
+      <div class="error-message"><span>{{ 'general.contact.error' | t }}</span></div>
+    {% endif %}
+
+    {% if form.posted_successfully? %}
+      <div class="success-message">{{ 'general.contact.success' | t }}</div>
+    {% else %}
+      <div class="field-wrap name">
+        <label>{{ 'general.general.name' | t }}</label>
+        <input type="text" placeholder="{{ 'general.general.name_placeholder' | t }}" value="" name="contact[name]" class="{% if form.errors contains "author" %}error{% endif %}">
+      </div>
+
+      <div class="field-wrap email">
+        <label>{{ 'general.general.email' | t }}</label>
+        <input type="text" placeholder="{{ 'general.general.email_placeholder' | t }}" value="" name="contact[email]" class="{% if form.errors contains "email" %}error{% endif %}">
+      </div>
+
+      <div class="field-wrap message">
+        <label>{{ 'general.general.message' | t }}</label>
+        <textarea name="contact[body]" class="{% if form.errors contains "body" %}error{% endif %}"></textarea>
+      </div>
+
+      <input type="hidden" class="comment-check" value="" />
+      <input type="submit" value="{{ 'general.contact.submit' | t }}">
+    {% endif %}
+
+  {% endform %}
+</div>

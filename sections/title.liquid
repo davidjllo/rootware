@@ -1,0 +1,30 @@
+<div id="textsection">
+  <div class="simpletext">
+    <h1> {{ section.settings.text-box }} </h1>
+  </div>
+</div>
+{% schema %}
+  {
+    "name": "Text Box",
+    "settings": [
+      {
+        "id": "text-box",
+        "type": "text",
+        "label": "Heading",
+        "default": "Title"
+      }
+    ],
+    "presets": [
+    {
+    "name": "Text",
+    "category": "TEXT"
+    }
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

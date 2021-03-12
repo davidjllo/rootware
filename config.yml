@@ -1,0 +1,20 @@
+development:
+  store: rootware.myshopify.com
+  password: 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
+  theme_id: "120553046194"
+  bucket_size: 40
+  refill_rate: 2
+  ignore_files:
+    - "*.swp" 
+    - "*~"
+    - "config/settings_data.json"
+production:
+  store: rootware.myshopify.com
+  password: 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
+  theme_id: "116797800626"
+  bucket_size: 40
+  refill_rate: 2
+  ignore_files:
+    - "*.swp" 
+    - "*~"
+    - "config/settings_data.json"

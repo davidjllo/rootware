@@ -12,8 +12,6 @@
 
   {% if template == 'index' %}
   {% if settings.home_vendor_carousel_enable %} 
-  {{ 'slick.css' | asset_url | stylesheet_tag }}
-  {{ 'slick-theme.css' | asset_url | stylesheet_tag }}
   {% endif %}
   {% endif %}
   <title>
@@ -58,6 +56,7 @@
 
   <!-- Theme CSS -->
   {{ 'theme.css' | asset_url | stylesheet_tag }}
+  {{ 'moship.css' | asset_url | stylesheet_tag }}
 
   {% if settings.custom-css != blank %}
     <style>
@@ -469,7 +468,7 @@
     Store information
     https://developers.google.com/search/docs/data-types/sitename
   {% endcomment %}
-  
+
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",
@@ -491,26 +490,13 @@
     })();
   </script>
   {% if template == 'index' %}
-  {% if settings.home_vendor_carousel_enable %} 
-  <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script> -->
-  {{ 'slick.min.js' | asset_url | script_tag }}
-   <script type="text/javascript">
-   $(document).ready(function() {
-   $('.autoplay').slick({
-   dots: false,
-   infinite: true,
-   speed: 500,
-   slidesToShow: 5,
-   slidesToScroll: 1,
-   autoplay: true,
-   autoplaySpeed: 2000,
-   arrows: false,
-   variableWidth: true
-   });
-   });
-   </script>
+    {% if settings.home_vendor_carousel_enable %} 
+    <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script> -->
+
+    {% endif %}
   {% endif %}
-  {% endif %}
+
+  {{ 'moship.js'| asset_url | script_tag}}
 </body>
 </html>

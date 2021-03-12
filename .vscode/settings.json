@@ -1,0 +1,9 @@
+{
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "emmet.includeLanguages": {
+    "liquid": "html"
+  },
+  "emmet.showSuggestionsAsSnippets": true
+}

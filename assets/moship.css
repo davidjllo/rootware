@@ -1,0 +1,25 @@
+.moship-arrow {
+  position: absolute;
+  top: 35%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+
+.moship-arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.moship-arrow svg path {
+  fill: black;
+}
+
+.moship-arrow.moship-next {
+  right: 0;
+}
+
+.moship-arrow.moship-prev {
+  left: 0;
+}
